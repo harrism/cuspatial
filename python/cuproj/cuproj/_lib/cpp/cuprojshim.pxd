@@ -11,7 +11,7 @@ cdef extern from "cuprojshim.hpp" namespace "cuproj" nogil:
         T y
 
 cdef extern from "cuprojshim.hpp" namespace "cuprojshim" nogil:
-    projection[vec_2d[T]]* make_projection[T](string, string) except +
+    projection[vec_2d[T]] make_projection[T](string, string) except +
 
     void transform[T](
         projection[vec_2d[T]],

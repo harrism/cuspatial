@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include <cuproj/projection.cuh>
-#include <cuproj/projection_factories.cuh>
+#include <cuproj/projection.hpp>
+#include <cuproj/projection_factories.hpp>
 #include <cuproj/vec_2d.hpp>
 
 #include <thrust/iterator/transform_iterator.h>
@@ -121,10 +121,15 @@ auto make_vec_2d_output_iterator(FirstIter first, SecondIter second)
 }  // namespace detail
 
 template <typename T>
-cuproj::projection<cuproj::vec_2d<T>>* make_projection(std::string const& src_epsg,
-                                                       std::string const& dst_epsg)
+cuproj::projection<cuproj::vec_2d<T>> make_projection(std::string const& src_epsg,
+                                                      std::string const& dst_epsg)
 {
+  // CUPROJ_CUDA_TRY(cudaStreamSynchronize(rmm::cuda_stream_view{}));
+  // CUPROJ_CUDA_TRY(cudaPeekAtLastError());
   return cuproj::make_projection<cuproj::vec_2d<T>>(src_epsg, dst_epsg);
+  // CUPROJ_CUDA_TRY(cudaStreamSynchronize(rmm::cuda_stream_view{}));
+  // CUPROJ_CUDA_TRY(cudaPeekAtLastError());
+  // return x;
 }
 
 template <typename T>

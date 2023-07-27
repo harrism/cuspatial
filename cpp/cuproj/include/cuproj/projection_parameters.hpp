@@ -35,6 +35,12 @@ enum class hemisphere { NORTH, SOUTH };
  */
 template <typename T>
 struct projection_parameters {
+  projection_parameters()                                        = default;
+  projection_parameters(projection_parameters const&)            = default;
+  projection_parameters(projection_parameters&&)                 = default;
+  projection_parameters& operator=(projection_parameters const&) = default;
+  projection_parameters& operator=(projection_parameters&&)      = default;
+
   projection_parameters(
     ellipsoid<T> const& e, int utm_zone, hemisphere utm_hemisphere, T lam0, T prime_meridian_offset)
     : ellipsoid_(e),

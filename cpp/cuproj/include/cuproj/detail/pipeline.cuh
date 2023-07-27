@@ -20,7 +20,7 @@
 #include <cuproj/operation/clamp_angular_coordinates.cuh>
 #include <cuproj/operation/degrees_to_radians.cuh>
 #include <cuproj/operation/offset_scale_cartesian_coordinates.cuh>
-#include <cuproj/operation/operation.cuh>
+#include <cuproj/operation/operation.hpp>
 #include <cuproj/operation/transverse_mercator.cuh>
 
 #include <thrust/execution_policy.h>
@@ -76,6 +76,7 @@ class pipeline {
   __device__ Coordinate operator()(Coordinate const& c) const
   {
     Coordinate c_out{c};
+    printf("num_stages: %ld\n", num_stages);
     thrust::for_each_n(thrust::seq, first_, num_stages, [&](auto const& op) {
       switch (op) {
         case operation_type::AXIS_SWAP: {

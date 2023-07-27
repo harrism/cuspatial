@@ -2,6 +2,7 @@ import cupy as cp
 
 from libc.stdint cimport uintptr_t
 from libcpp.string cimport string
+from libcpp.utility cimport move
 
 from cuproj._lib.cpp.cuprojshim cimport make_projection, transform, vec_2d
 from cuproj._lib.cpp.operation cimport direction
@@ -12,8 +13,8 @@ cdef direction_string_to_enum(dir: str):
     return direction.FORWARD if dir == "FORWARD" else direction.INVERSE
 
 cdef class Transformer:
-    cdef projection[vec_2d[float]]* proj_32
-    cdef projection[vec_2d[double]]* proj_64
+    cdef projection[vec_2d[float]] proj_32
+    cdef projection[vec_2d[double]] proj_64
 
     def __init__(self, crs_from, crs_to):
         if isinstance(crs_from, int):
@@ -34,11 +35,8 @@ cdef class Transformer:
         crs_to_b = crs_to.encode('utf-8')
         self.proj_32 = make_projection[float](
             <string> crs_from_b, <string> crs_to_b)
-        self.proj_64 = make_projection[double](
-            <string> crs_from_b, <string> crs_to_b)
-
-    def __del__(self):
-        del self.proj
+        self.proj_64 = move(make_projection[double](
+            <string> crs_from_b, <string> crs_to_b))
 
     def transform(self, x, y, dir):
         if (len(x.shape) != 1):
@@ -75,7 +73,7 @@ cdef class Transformer:
 
         with nogil:
             transform(
-                self.proj_32[0],
+                self.proj_32,
                 x_in,
                 y_in,
                 x_out,
@@ -100,7 +98,7 @@ cdef class Transformer:
 
         with nogil:
             transform(
-                self.proj_64[0],
+                self.proj_64,
                 x_in,
                 y_in,
                 x_out,

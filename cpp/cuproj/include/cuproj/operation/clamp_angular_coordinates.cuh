@@ -19,7 +19,7 @@
 #include <cuproj/detail/utility/cuda.hpp>
 #include <cuproj/detail/wrap_to_pi.hpp>
 #include <cuproj/error.hpp>
-#include <cuproj/operation/operation.cuh>
+#include <cuproj/operation/operation.hpp>
 #include <cuproj/projection_parameters.hpp>
 
 #include <thrust/iterator/transform_iterator.h>

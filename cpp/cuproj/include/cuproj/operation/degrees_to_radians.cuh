@@ -18,7 +18,7 @@
 
 #include <cuproj/constants.hpp>
 #include <cuproj/detail/utility/cuda.hpp>
-#include <cuproj/operation/operation.cuh>
+#include <cuproj/operation/operation.hpp>
 
 namespace cuproj {
 

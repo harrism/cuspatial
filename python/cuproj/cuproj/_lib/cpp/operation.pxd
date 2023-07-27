@@ -1,5 +1,5 @@
 
-cdef extern from "cuproj/operation/operation.cuh" namespace "cuproj" nogil:
+cdef extern from "cuproj/operation/operation.hpp" namespace "cuproj" nogil:
     cdef enum operation_type:
         AXIS_SWAP = 0
         DEGREES_TO_RADIANS = 1

@@ -18,7 +18,7 @@
 
 #include <cuproj/detail/utility/cuda.hpp>
 #include <cuproj/ellipsoid.hpp>
-#include <cuproj/operation/operation.cuh>
+#include <cuproj/operation/operation.hpp>
 #include <cuproj/projection_parameters.hpp>
 
 #include <thrust/iterator/transform_iterator.h>

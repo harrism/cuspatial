@@ -17,7 +17,7 @@
 #include <cuproj_test/coordinate_generator.cuh>
 
 #include <cuproj/error.hpp>
-#include <cuproj/projection_factories.cuh>
+#include <cuproj/projection_factories.hpp>
 #include <cuproj/vec_2d.hpp>
 
 #include <cuspatial_test/vector_equality.hpp>
@@ -38,7 +38,9 @@
 #include <type_traits>
 
 template <typename T>
-struct ProjectionTest : public ::testing::Test {};
+struct ProjectionTest : public ::testing::Test {
+  cuproj::projection<cuproj::vec_2d<T>> proj;
+};
 
 using TestTypes = ::testing::Types<float, double>;
 TYPED_TEST_CASE(ProjectionTest, TestTypes);
@@ -132,8 +134,8 @@ void run_forward_and_inverse(DeviceVector const& input,
 
     auto proj = cuproj::make_projection<coordinate<T>>(epsg_src, epsg_dst);
 
-    run_cuproj_test(h_input, h_expected, *proj, cuproj::direction::FORWARD, tolerance);
-    run_cuproj_test(h_expected, h_input, *proj, cuproj::direction::INVERSE, tolerance);
+    run_cuproj_test(h_input, h_expected, proj, cuproj::direction::FORWARD, tolerance);
+    run_cuproj_test(h_expected, h_input, proj, cuproj::direction::INVERSE, tolerance);
   };
 
   // forward construction
@@ -270,4 +272,18 @@ TYPED_TEST(ProjectionTest, many)
     std::string epsg = "EPSG:32648";
     test_grid<TypeParam>(min_corner, max_corner, num_points_xy, epsg);
   }
+}
+
+TYPED_TEST(ProjectionTest, sanity)
+{
+  // Test that the sanity check on the PROJ version works
+  {
+    cuproj::projection<cuproj::vec_2d<TypeParam>> __pyx_t_9;
+    __pyx_t_9 = cuproj::make_projection<cuproj::vec_2d<TypeParam>>(std::string{"EPSG:4326"},
+                                                                   std::string{"EPSG:32756"});
+
+    this->proj = __pyx_t_9;
+  }
+
+  cudaDeviceSynchronize();
 }

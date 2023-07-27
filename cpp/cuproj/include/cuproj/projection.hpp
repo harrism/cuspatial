@@ -16,19 +16,12 @@
 
 #pragma once
 
-#include <cuproj/detail/pipeline.cuh>
-#include <cuproj/ellipsoid.hpp>
-#include <cuproj/operation/operation.cuh>
+#include <cuproj/operation/operation.hpp>
 #include <cuproj/projection_parameters.hpp>
 
 #include <rmm/cuda_stream_view.hpp>
-#include <rmm/exec_policy.hpp>
 
 #include <thrust/device_vector.h>
-#include <thrust/transform.h>
-
-#include <iterator>
-#include <type_traits>
 
 namespace cuproj {
 
@@ -44,6 +37,26 @@ namespace cuproj {
 template <typename Coordinate, typename T = typename Coordinate::value_type>
 class projection {
  public:
+  projection() {}
+
+  projection(projection const& other);
+  /*{
+    params_                = other.params_;
+    constructed_direction_ = other.constructed_direction_;
+    copy_operations(other.operations_);
+  }*/
+
+  projection& operator=(projection const& other);
+  /*{
+    params_                = other.params_;
+    constructed_direction_ = other.constructed_direction_;
+    copy_operations(other.operations_);
+    return *this;
+  }*/
+
+  projection(projection&&)            = default;
+  projection& operator=(projection&&) = default;
+
   /**
    * @brief Construct a new projection object
    *
@@ -75,8 +88,8 @@ class projection {
                  InputCoordIter last,
                  OutputCoordIter result,
                  direction dir,
-                 rmm::cuda_stream_view stream = rmm::cuda_stream_default) const
-  {
+                 rmm::cuda_stream_view stream = rmm::cuda_stream_default) const;
+  /*{
     dir = (constructed_direction_ == direction::FORWARD) ? dir : reverse(dir);
 
     if (dir == direction::FORWARD) {
@@ -88,11 +101,11 @@ class projection {
         params_, operations_.data().get(), operations_.size()};
       thrust::transform(rmm::exec_policy(stream), first, last, result, pipe);
     }
-  }
+  }*/
 
  private:
-  void setup(std::vector<operation_type> const& operations)
-  {
+  void setup(std::vector<operation_type> const& operations);
+  /*{
     std::for_each(operations.begin(), operations.end(), [&](auto const& op) {
       switch (op) {
         case operation_type::TRANSVERSE_MERCATOR: {
@@ -107,11 +120,15 @@ class projection {
 
     operations_.resize(operations.size());
     thrust::copy(operations.begin(), operations.end(), operations_.begin());
-  }
+  }*/
+
+  void copy_operations(thrust::device_vector<operation_type> const& operations);
 
   thrust::device_vector<operation_type> operations_;
-  projection_parameters<T> params_;
+  projection_parameters<T> params_{};
   direction constructed_direction_{direction::FORWARD};
 };
 
 }  // namespace cuproj
+
+#include "detail/projection.cuh"
